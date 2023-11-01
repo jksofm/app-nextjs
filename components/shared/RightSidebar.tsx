@@ -5,7 +5,7 @@ import { currentUser } from "@clerk/nextjs";
 // import { fetchCommunities } from "@/lib/actions/community.actions";
 // import { fetchUsers } from "@/lib/actions/user.actions";
 
-async function RightSidebar() {
+export default async function RightSidebar() {
   const user = await currentUser();
   if (!user) return null;
 
@@ -69,5 +69,3 @@ async function RightSidebar() {
     </section>
   );
 }
-
-export default RightSidebar;
