@@ -25,9 +25,9 @@ export default function Loadmore() {
     //   userId: user?.id as string,
     //   pageSize: 3,
     // });
-
+    const host = process.env.HOST || "http://localhost:3000/";
     const data = await fetch(
-      `http://localhost:3000/api/threads?pageSize=5&pageNumber=${nextPage}`
+      `${host}api/threads?pageSize=5&pageNumber=${nextPage}`
     );
     const newThreads = await data.json();
     // console.log("tgreas", newThreads);
