@@ -10,11 +10,13 @@ import {
 import ThreadCard from "../cards/ThreadCard";
 import { useUser } from "@clerk/nextjs";
 import ThreadCardClient from "../cards/ThreadCardClient";
+import { useRouter } from "next/navigation";
 
 export const revalidate = 60;
 export default function Loadmore() {
   const [threadsList, setThreadsList] = useState([]);
   const [pagesLoaded, setPagesLoaded] = useState(0);
+  const router = useRouter();
   const [isNext, setIsNext] = useState(true);
   const { ref, inView } = useInView();
   const { isSignedIn, user, isLoaded } = useUser();
@@ -25,9 +27,13 @@ export default function Loadmore() {
     //   userId: user?.id as string,
     //   pageSize: 3,
     // });
-    const host = process.env.HOST || "http://localhost:3000/";
+
+    const host = "http://localhost:3000/";
+    const hostDomain = "https://app-nextjs-six.vercel.app/";
+
+    // console.log("host", process.env.ENVIRONMENT);
     const data = await fetch(
-      `${host}api/threads?pageSize=5&pageNumber=${nextPage}`
+      `${hostDomain}api/threads?pageSize=5&pageNumber=${nextPage}`
     );
     const newThreads = await data.json();
     // console.log("tgreas", newThreads);

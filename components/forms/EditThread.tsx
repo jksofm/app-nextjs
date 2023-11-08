@@ -59,7 +59,7 @@ export default function EditThread({
   const onSubmit = async (values: z.infer<typeof ThreadValidation>) => {
     // console.log("values", values.thread);
     try {
-      await EditThreadInfo({ threadContent: values.thread, threadId });
+      await EditThreadInfo({ threadContent: values.thread, threadId, userId });
       toast.success("Update successfully!");
 
       router.push(`/profile/${userId}`);

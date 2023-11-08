@@ -360,9 +360,11 @@ export async function addCommentToThread({
 export async function EditThreadInfo({
   threadId,
   threadContent,
+  userId,
 }: {
   threadId: string;
   threadContent: string;
+  userId: string;
 }) {
   connectToDB();
   try {
@@ -374,6 +376,7 @@ export async function EditThreadInfo({
         text: threadContent,
       }
     );
+    revalidatePath(`/profile/${userId}`);
   } catch (e) {
     throw new Error(`Errors : ${e}`);
   }
