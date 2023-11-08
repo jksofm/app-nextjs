@@ -6,4 +6,10 @@ export type User = {
   bio: string;
   image: string;
   onboarded?: boolean;
+  communities?: {
+    name: string;
+    username: string;
+    image: string;
+    _id: string;
+  };
 };

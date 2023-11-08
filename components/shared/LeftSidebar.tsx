@@ -3,17 +3,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { SignOutButton, SignedIn, useAuth } from "@clerk/nextjs";
+import {
+  SignOutButton,
+  SignedIn,
+  useAuth,
+  useOrganization,
+} from "@clerk/nextjs";
 
 import { sidebarLinks } from "@/constants";
 import { User } from "@/models/User";
 import { getUserProfile } from "@/lib/actions/user.actions";
-
+import { useSearchParams } from "next/navigation";
 const LeftSidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
 
   const { userId } = useAuth();
+  const { organization } = useOrganization();
 
   return (
     <section className="custom-scrollbar leftsidebar">
@@ -24,6 +30,10 @@ const LeftSidebar = () => {
             pathname === link.route;
 
           if (link.route === "/profile") link.route = `${link.route}/${userId}`;
+          if (organization) {
+            if (link.route === "/create-thread")
+              link.route = `/create-thread?communityId=${organization.id}`;
+          }
 
           return (
             <Link

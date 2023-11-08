@@ -1,6 +1,6 @@
 import React from "react";
-import { currentUser } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import { currentUser, useOrganization } from "@clerk/nextjs";
+import { redirect, useSearchParams } from "next/navigation";
 import { getMyProfile } from "@/lib/actions/user.actions";
 import PostThread from "@/components/forms/PostThread";
 export default async function CreateThreadPage() {
@@ -10,6 +10,7 @@ export default async function CreateThreadPage() {
   if (!userInfo?.onboarded) {
     redirect("/onboarding");
   }
+
   return (
     <>
       <h1 className="head-text">Create Thread</h1>;

@@ -13,6 +13,7 @@ export default function CommentList({
   username: string;
   userImage: string;
 }) {
+  console.log(threadArray);
   return (
     <div>
       {threadArray.map((thread) => {

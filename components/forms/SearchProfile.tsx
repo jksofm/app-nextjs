@@ -26,9 +26,12 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import Image from "next/image";
 import { addCommentToThread } from "@/lib/actions/thread.actions";
+import useQuery from "@/hooks/useQuery";
 
 export default function SearchProfile() {
   const router = useRouter();
+  const searchParams = useQuery();
+
   const form = useForm({
     resolver: zodResolver(searchValidation),
     defaultValues: {
@@ -38,9 +41,23 @@ export default function SearchProfile() {
   const handleSearch = (values: z.infer<typeof searchValidation>) => {
     console.log(values.searchString);
     if (values.searchString.trim() === "") {
+      // const newQueryParams = {
+      //   ...searchParams,
+      //   page: 1,
+      //   searchString: values.searchString,
+      // };
+
       router.replace("/search");
+    } else {
+      const newQueryParams = {
+        ...searchParams,
+        page: 1,
+        searchString: values.searchString,
+      };
+      const result = new URLSearchParams(newQueryParams as any).toString();
+      // router.push(`${path}?page=1`);
+      router.push(`?${result}`);
     }
-    router.push(`/search?searchString=${values.searchString}`);
   };
   return (
     <div>

@@ -145,3 +145,14 @@ export async function getActivity(userId: string) {
     console.log(e);
   }
 }
+export async function getUsersId() {
+  try {
+    connectToDB();
+    const users = await User.find({});
+    const userIds = users.map((item) => {
+      return { id: item._id.toString() };
+    });
+
+    return userIds;
+  } catch (e) {}
+}

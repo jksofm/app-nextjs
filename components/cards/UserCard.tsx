@@ -7,11 +7,13 @@ export default function UserCard({
   userImage,
   username,
   name,
+  personType,
 }: {
   userId: string;
   userImage: string;
   username: string;
   name: string;
+  personType?: string;
 }) {
   return (
     <article className="user-card">

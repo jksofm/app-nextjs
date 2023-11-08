@@ -13,6 +13,8 @@ import { getMyProfile } from "@/lib/actions/user.actions";
 import CommunityCard from "@/components/cards/CommunityCard";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import SearchCommunities from "@/components/forms/SearchCommunities";
+import Pagination from "@/components/shared/Pagination";
 
 async function Page({
   searchParams,
@@ -25,29 +27,25 @@ async function Page({
   const userInfo = await getMyProfile(user.id);
   if (!userInfo?.onboarded) redirect("/onboarding");
 
-  const result = await fetchMyCommunities({
-    searchString: searchParams.q,
+  const result = await fetchCommunities({
+    searchString: searchParams.searchString,
     pageNumber: searchParams?.page ? +searchParams.page : 1,
-    pageSize: 5,
-    userId: userInfo._id,
+    pageSize: 4,
   });
 
   return (
     <>
       <div className="flex justify-between items-center">
-        <h1 className="md:head-text text-light-1 text-[1.5rem] font-bold">
-          My Communities
-        </h1>
-        <Link href={`/communities/find`}>
-          <Button className="community-card_btn md:mr-10">
-            Find More Communities
-          </Button>
+        <h1 className="head-text">Communities</h1>
+        <Link href={`/communities`}>
+          <Button className="community-card_btn">My Communities</Button>
         </Link>
       </div>
 
-      {/* <div className='mt-5'>
-        <Searchbar routeType='communities' />
-      </div> */}
+      <div className="mt-5">
+        {/* <Searchbar routeType='communities' /> */}
+        <SearchCommunities />
+      </div>
 
       <section className="mt-9 flex flex-wrap gap-4">
         {result.communities.length === 0 ? (
@@ -69,11 +67,13 @@ async function Page({
         )}
       </section>
 
-      {/* <Pagination
-        path='communities'
-        pageNumber={searchParams?.page ? +searchParams.page : 1}
-        isNext={result.isNext}
-      /> */}
+      <Pagination
+        pageNumber={Number(searchParams.page) || result.pagination.pageNumber}
+        pageSize={result.pagination.pageSize}
+        pageTotal={result.pagination.totalPage}
+        isNext={result.pagination.pageNumber < result.pagination.totalPage}
+        path={`/search`}
+      />
     </>
   );
 }

@@ -13,12 +13,12 @@ export default async function PageThread({
   params: { id: string };
 }) {
   const thread: any = await getThreadInfo(params.id);
-  console.log("thread", thread.data.children.length);
+  // console.log("thread", thread.data.children.length);
   const user = await currentUser();
   if (!user) return null;
   const userInfo = await getMyProfile(user.id);
   if (!userInfo?.onboarded) redirect("/onboarding");
-  console.log(thread.data.children);
+  // console.log(thread.data.children);
   if (thread.data) {
     return (
       <section className="relative">

@@ -61,7 +61,7 @@ export default function AccountProfile({
         values.profile_photo = imgRes[0].url;
       }
     }
-    console.log(values);
+    // console.log(values);
 
     ///Update User profile
     try {

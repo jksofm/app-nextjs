@@ -1,5 +1,10 @@
 "use client";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  redirect,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import * as z from "zod";
 import {
   Form,
@@ -17,58 +22,52 @@ import { ThreadValidation } from "@/lib/vaidation/thread";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import { createThread } from "@/lib/actions/thread.actions";
+import {
+  EditThreadInfo,
+  createThread,
+  getThreadInfo,
+} from "@/lib/actions/thread.actions";
 import { Router } from "next/router";
 import { useOrganization } from "@clerk/nextjs";
+import { toast } from "react-toastify";
 
-export default function PostThread({ userId }: { userId: string }) {
+export default function EditThread({
+  userId,
+  threadContent,
+  threadId,
+}: {
+  userId: string;
+  threadContent: string;
+  threadId: string;
+}) {
   const pathName = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const { organization } = useOrganization();
+
+  //   const threadInfo = await getThreadInfo(threadId as string);
 
   const form = useForm({
     resolver: zodResolver(ThreadValidation),
     defaultValues: {
-      thread: "",
+      thread: threadContent,
       accountId: userId,
     },
   });
-  const searchParams = useSearchParams();
-
-  const communityId = searchParams.get("communityId");
-
-  if (communityId && organization && communityId !== organization.id) {
-    router.push(`/create-thread?communityId=${organization.id}`);
-  }
-  if (organization && communityId !== organization.id) {
-    router.push(`/create-thread?communityId=${organization.id}`);
-  }
-  if (!organization) {
-    router.push(`/create-thread`);
-  }
-
+  //   console.log(userId);
   const onSubmit = async (values: z.infer<typeof ThreadValidation>) => {
-    if (communityId) {
-      await createThread({
-        author: values.accountId,
-        text: values.thread,
-        communityId: communityId,
-        path: pathName,
-      });
-    } else {
-      await createThread({
-        author: values.accountId,
-        text: values.thread,
-        communityId: null,
-        path: pathName,
-      });
-    }
-    if (!communityId) {
-      router.push("/");
-    } else {
-      router.push(`/communities/${communityId}`);
+    // console.log("values", values.thread);
+    try {
+      await EditThreadInfo({ threadContent: values.thread, threadId });
+      toast.success("Update successfully!");
+
+      router.push(`/profile/${userId}`);
+    } catch (e) {
+      toast.error("Update fail!");
     }
   };
+
   return (
     <Form {...form}>
       <form
@@ -131,7 +130,7 @@ export default function PostThread({ userId }: { userId: string }) {
           )}
         />
         <Button type="submit" className="bg-primary-500">
-          Post Thread
+          Edit Thread
         </Button>
       </form>
     </Form>

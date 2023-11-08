@@ -14,68 +14,62 @@ import {
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CommentValidation, ThreadValidation } from "@/lib/vaidation/thread";
+import {
+  CommentValidation,
+  ThreadValidation,
+  searchValidation,
+} from "@/lib/vaidation/thread";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import Image from "next/image";
 import { addCommentToThread } from "@/lib/actions/thread.actions";
+import useQuery from "@/hooks/useQuery";
 
-export default function ConmmentThread({
-  threadId,
-  userId,
-  username,
-  userImage,
-}: {
-  threadId: string;
-  username: string;
-  userImage: string;
-  userId: string;
-}) {
-  const pathName = usePathname();
+export default function SearchCommunities() {
+  const router = useRouter();
+  const searchParams = useQuery();
 
   const form = useForm({
-    resolver: zodResolver(CommentValidation),
+    resolver: zodResolver(searchValidation),
     defaultValues: {
-      content: "",
+      searchString: "",
     },
   });
-  const onSubmit = async (values: z.infer<typeof CommentValidation>) => {
-    // console.log(threadId);
-    await addCommentToThread({
-      author: userId,
-      communityId: null,
-      parentId: threadId,
-      path: pathName,
-      text: values.content,
-    });
-    console.log(values);
-    form.reset();
+  const handleSearch = (values: z.infer<typeof searchValidation>) => {
+    // console.log(values.searchString);
+    if (values.searchString.trim() === "") {
+      router.replace("/communities/find");
+    } else {
+      const newQueryParams = {
+        ...searchParams,
+        page: 1,
+        searchString: values.searchString,
+      };
+      const result = new URLSearchParams(newQueryParams as any).toString();
+      // router.push(`${path}?page=1`);
+      router.push(`?${result}`);
+    }
+    // router.push(`/communities/find?searchString=${values.searchString}`);
   };
   return (
     <div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="comment-form">
+        <form
+          onSubmit={form.handleSubmit(handleSearch)}
+          className="comment-form"
+        >
           <FormField
             control={form.control}
-            name="content"
+            name="searchString"
             render={({ field }) => (
               <FormItem className="flex items-center gap-3 w-full">
-                <FormLabel className="text-base-semibold text-light-2">
-                  <Image
-                    alt="Avatar"
-                    width={48}
-                    height={48}
-                    src={userImage}
-                    className="rounded-full object-cover"
-                  />
-                </FormLabel>
                 <FormControl className="no-focus mt-0 border border-dark-4 bg-dark-3 text-light-1">
                   <Input
                     type="text"
-                    placeholder="Comment..."
+                    placeholder="Search..."
                     className="no-focus text-light-1 outline-none"
                     {...field}
                   />
@@ -87,7 +81,7 @@ export default function ConmmentThread({
           />
 
           <Button className="bg-primary-500" type="submit">
-            Reply
+            Search
           </Button>
         </form>
       </Form>

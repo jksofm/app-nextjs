@@ -1,5 +1,6 @@
 import UserCard from "@/components/cards/UserCard";
 import SearchProfile from "@/components/forms/SearchProfile";
+import Pagination from "@/components/shared/Pagination";
 import { fetchThreadsByUserId } from "@/lib/actions/thread.actions";
 import { fetchUsers, getMyProfile } from "@/lib/actions/user.actions";
 import { searchValidation } from "@/lib/vaidation/thread";
@@ -22,7 +23,7 @@ export default async function SearchPage({
   searchParams,
 }: {
   params: { slug: string };
-  searchParams?: { searchString: string };
+  searchParams?: any;
 }) {
   const user = await currentUser();
   if (!user) return null;
@@ -31,6 +32,7 @@ export default async function SearchPage({
   const result: Response = (await fetchUsers({
     userId: user.id,
     searchString: (searchParams.searchString as string) || "",
+    pageNumber: Number(searchParams.page as string) || 1,
   })) as Response;
 
   return (
@@ -56,6 +58,14 @@ export default async function SearchPage({
           </>
         )}
       </div>
+
+      <Pagination
+        pageNumber={Number(searchParams.page) || result.pagination.pageNumber}
+        pageSize={result.pagination.pageSize}
+        pageTotal={result.pagination.pageTotal}
+        isNext={result.pagination.pageNumber < result.pagination.pageTotal}
+        path={`/search`}
+      />
     </section>
   );
 }
